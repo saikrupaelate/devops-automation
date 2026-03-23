@@ -1,0 +1,18 @@
+---
+- name: Install Java 17
+  apt:
+    name: openjdk-17-jre
+    state: present
+    update_cache: yes
+
+- name: Verify Java installation
+  command: java -version
+  register: java_output
+
+- name: Show Java version
+  debug:
+    var: java_output.stderr_lines
+
+- name: Post installation message
+  debug:
+    msg: "✅ Java installed successfully on {{ ansible_hostname }}"

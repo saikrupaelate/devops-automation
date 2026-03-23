@@ -1,0 +1,28 @@
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Start and enable Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Push HTML file with server info
+  copy:
+    dest: /var/www/html/index.html
+    content: |
+      <html>
+        <body>
+          <h1>Nginx Server</h1>
+          <p>Hostname: {{ ansible_hostname }}</p>
+          <p>IP: {{ ansible_default_ipv4.address }}</p>
+        </body>
+      </html>
+
+- name: Post installation message
+  debug:
+    msg: "✅ Nginx installed successfully on {{ ansible_hostname }}"

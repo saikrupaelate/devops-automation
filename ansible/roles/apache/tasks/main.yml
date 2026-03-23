@@ -1,0 +1,28 @@
+---
+- name: Install Apache
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+- name: Start and enable Apache
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: Push HTML file with server info
+  copy:
+    dest: /var/www/html/index.html
+    content: |
+      <html>
+        <body>
+          <h1>Apache Server</h1>
+          <p>Hostname: {{ ansible_hostname }}</p>
+          <p>IP: {{ ansible_default_ipv4.address }}</p>
+        </body>
+      </html>
+
+- name: Post installation message
+  debug:
+    msg: "✅ Apache installed successfully on {{ ansible_hostname }}"

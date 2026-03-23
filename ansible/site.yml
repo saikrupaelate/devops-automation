@@ -1,0 +1,13 @@
+---
+- name: Configure Apache Servers
+  hosts: apache
+  become: yes
+  roles:
+    - apache
+    - java        # Java installed ONLY on Apache group
+
+- name: Configure Nginx Servers
+  hosts: nginx
+  become: yes
+  roles:
+    - nginx

@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    KEY = "/var/lib/jenkins/.ssh/krupa_keypair.pem"
+    KEY = "/var/jenkins_home/.ssh/krupa_keypair.pem"  // ✅ Docker path, not /var/lib/jenkins
   }
 
   stages {
@@ -33,22 +33,16 @@ pipeline {
 
     stage('Generate Inventory') {
       steps {
-        // ✅ FIXED: terraform output returns a plain list, use jq -r '.[]'
         sh '''
           cd terraform
-
           echo "[apache]" > ../ansible/inventory.ini
           terraform output -json apache_ips | jq -r '.[]' >> ../ansible/inventory.ini
-
           echo "" >> ../ansible/inventory.ini
-
           echo "[nginx]" >> ../ansible/inventory.ini
           terraform output -json nginx_ips | jq -r '.[]' >> ../ansible/inventory.ini
-
           echo "" >> ../ansible/inventory.ini
           echo "[all:vars]" >> ../ansible/inventory.ini
           echo "ansible_user=ubuntu" >> ../ansible/inventory.ini
-
           cat ../ansible/inventory.ini
         '''
       }
@@ -56,10 +50,7 @@ pipeline {
 
     stage('Wait for EC2 SSH') {
       steps {
-        // ✅ NEW: Wait for instances to be SSH-ready before Ansible runs
-        sh '''
-          sleep 30
-        '''
+        sh 'sleep 30'
       }
     }
 

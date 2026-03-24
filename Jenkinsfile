@@ -36,12 +36,12 @@ pipeline {
         sh '''
           cat > ansible/inventory.ini << EOF
     [apache]
-    3.82.44.243
-    54.87.221.183
+    54.90.83.61
+    98.80.120.254
 
     [nginx]
-    18.214.98.252
-    54.92.211.141
+    54.162.210.206
+    54.198.7.81
 
     [all:vars]
     ansible_user=ubuntu

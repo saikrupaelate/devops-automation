@@ -9,7 +9,9 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        git 'https://github.com/your-org/devops-automation.git'
+        git credentialsId: 'github-creds',
+          url: 'https://github.com/saikrupaelate/devops-automation.git',
+          branch: 'main'
       }
     }
 

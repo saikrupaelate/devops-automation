@@ -26,7 +26,7 @@ pipeline {
     stage('Terraform Apply') {
       steps {
         dir('terraform') {
-          sh 'terraform apply -auto-approve'
+          sh 'echo "EC2s already provisioned, skipping apply"'
         }
       }
     }
@@ -34,16 +34,19 @@ pipeline {
     stage('Generate Inventory') {
       steps {
         sh '''
-          cd terraform
-          echo "[apache]" > ../ansible/inventory.ini
-          terraform output -json apache_ips | jq -r '.[]' >> ../ansible/inventory.ini
-          echo "" >> ../ansible/inventory.ini
-          echo "[nginx]" >> ../ansible/inventory.ini
-          terraform output -json nginx_ips | jq -r '.[]' >> ../ansible/inventory.ini
-          echo "" >> ../ansible/inventory.ini
-          echo "[all:vars]" >> ../ansible/inventory.ini
-          echo "ansible_user=ubuntu" >> ../ansible/inventory.ini
-          cat ../ansible/inventory.ini
+          cat > ansible/inventory.ini << EOF
+    [apache]
+    3.82.44.243
+    54.87.221.183
+
+    [nginx]
+    18.214.98.252
+    54.92.211.141
+
+    [all:vars]
+    ansible_user=ubuntu
+    EOF
+          cat ansible/inventory.ini
         '''
       }
     }

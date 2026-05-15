@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    KEY = "/var/jenkins_home/.ssh/krupa_keypair.pem"  // ✅ Docker path, not /var/lib/jenkins
+    KEY = "/var/jenkins_home/.ssh/krupa_keypair.pem"
   }
 
   stages {
@@ -34,38 +34,35 @@ pipeline {
     stage('Generate Inventory') {
       steps {
         sh '''
-          cat > ansible/inventory.ini << EOF
-    [apache]
-    54.90.83.61
-    98.80.120.254
-
-    [nginx]
-    54.162.210.206
-    54.198.7.81
-
-    [all:vars]
-    ansible_user=ubuntu
-    EOF
-          cat ansible/inventory.ini
-        '''
+echo "[apache]" > ansible/inventory.ini
+echo "54.90.83.61" >> ansible/inventory.ini
+echo "98.80.120.254" >> ansible/inventory.ini
+echo "" >> ansible/inventory.ini
+echo "[nginx]" >> ansible/inventory.ini
+echo "54.162.210.206" >> ansible/inventory.ini
+echo "54.198.7.81" >> ansible/inventory.ini
+echo "" >> ansible/inventory.ini
+echo "[all:vars]" >> ansible/inventory.ini
+echo "ansible_user=ubuntu" >> ansible/inventory.ini
+cat ansible/inventory.ini
+'''
       }
     }
 
     stage('Wait for EC2 SSH') {
       steps {
-        sh 'sleep 30'
+        sh 'sleep 10'
       }
     }
 
     stage('Run Ansible') {
       steps {
         sh '''
-          cd ansible
-          ansible-playbook -i inventory.ini site.yml \
-            --user ubuntu \
-            --private-key $KEY \
-            -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'"
-        '''
+ansible-playbook -i ansible/inventory.ini ansible/site.yml \
+  --user ubuntu \
+  --private-key $KEY \
+  -e "ansible_ssh_common_args='-o StrictHostKeyChecking=no'"
+'''
       }
     }
 
